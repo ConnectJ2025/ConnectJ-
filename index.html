@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connect J</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "helvetica now", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fff;
+      color: #fff;
+    }
+
+    .split-hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .split-panel {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 40px 20px;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: flex 0.6s ease, transform 0.6s ease;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+    }
+
+    .split-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      transition: background 0.4s ease;
+    }
+
+    .split-panel:hover {
+      flex: 1.2;
+      transform: scale(1.02);
+    }
+
+    .split-panel:hover::before {
+      background: rgba(0,0,0,0.15);
+    }
+
+    .panel-content {
+      position: relative;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .panel-label {
+      font-size: 14px;
+      letter-spacing: 0.2em;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+
+    .panel-title {
+      font-size: 22px;
+      margin-bottom: 16px;
+    }
+
+    .panel-button {
+      display: inline-block;
+      padding: 8px 24px;
+      border-radius: 999px;
+      border: 1px solid #fff;
+      font-size: 14px;
+      text-decoration: none;
+      color: #fff;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(6px);
+    }
+
+    .panel-button:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .hero-logo {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      letter-spacing: 0.3em;
+      z-index: 3;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    /* 背景画像（必要に応じて差し替え） */
+    .split-panel.left {
+      background-image: url("GreenJ1.png");
+      background-color: #111;
+    }
+
+    .split-panel.right {
+      background-image: url("Jealou2.png");
+      background-color: #22130c;
+    }
+
+    /* スマホレイアウト */
+    @media (max-width: 768px) {
+      .split-hero {
+        flex-direction: column;
+        height: 100vh;
+      }
+      .split-panel {
+        flex: 1 0 50vh;
+        align-items: center;
+        justify-content: center;
+        padding: 32px 16px;
+      }
+      .hero-logo {
+        top: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 24px;
+      }
+    }
+
+    /* ===== メニュー一覧エリア ===== */
+    .menu-list {
+      background: #fff;
+      color: #000;
+      padding: 60px 20px 50px;
+      border-top: 1px solid #eee;
+    }
+
+    .menu-list-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    /* 左側の説明テキスト */
+    .menu-copy {
+      flex: 1 1 260px;
+    }
+
+    .menu-tag {
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin: 0 0 8px;
+      opacity: 0.7;
+    }
+
+    .menu-title {
+      font-size: 24px;
+      letter-spacing: 0.08em;
+      margin: 0 0 12px;
+    }
+
+    .menu-desc {
+      font-size: 14px;
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    /* 右側のメニューボタン */
+    .menu-links {
+      flex: 1 1 260px;
+    }
+
+    .menu-links ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .menu-links li {
+      font-size: 14px;
+    }
+
+    /* ピル型ボタン */
+    .menu-pill {
+      display: inline-block;
+      padding: 10px 24px;
+      border-radius: 999px;
+      border: 1px solid #000;
+      text-decoration: none;
+      color: #000;
+      background: #fff;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .menu-pill span {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      margin-bottom: 2px;
+    }
+
+    .menu-pill:hover {
+      background: #000;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* スマホ対応 */
+    @media (max-width: 768px) {
+      .menu-list {
+        padding: 40px 16px 60px;
+      }
+
+      .menu-list-inner {
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .menu-title {
+        font-size: 20px;
+      }
+
+      .menu-links ul {
+        gap: 10px;
+      }
+
+      .menu-pill {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* ===== 埼玉の特産品カード ===== */
+    .local-ingredients {
+      margin: 32px auto 16px;
+      max-width: 1080px;
+      padding: 32px 24px 40px;
+      background: #f5f5f5;
+      border-radius: 24px;
+    }
+
+    .local-ingredients-head {
+      margin-bottom: 24px;
+    }
+
+    .local-ingredients-tag {
+      font-size: 12px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin: 0 0 6px;
+    }
+
+    .local-ingredients-title {
+      font-size: 18px;
+      margin: 0;
+    }
+/* カード並び（横にスライドできる） */
+.local-card-list {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;                 /* 横スクロール */
+  padding-bottom: 8px;
+  scroll-snap-type: x mandatory;    /* スナップで気持ちよく止まる */
+  -webkit-overflow-scrolling: touch;/* スマホでぬるっと */
+}
+
+/* スクロールバーを目立たなくする（対応ブラウザのみ） */
+.local-card-list::-webkit-scrollbar {
+  display: none;
+}
+.local-card-list {
+  scrollbar-width: none;
+}
+
+/* カード本体 */
+.local-card {
+  flex: 0 0 280px;          /* 1枚あたりの幅固定（調整OK） */
+  max-width: 320px;
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+  scroll-snap-align: start; /* スクロール位置で揃う */
+}
+
+    
+
+    /* 上の写真部分 */
+    .local-card-image {
+      position: relative;
+      padding-top: 70%;
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* 写真の上の文字 */
+    .local-card-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.15),
+        rgba(0,0,0,0.45)
+      );
+    }
+
+    .local-card-name-ja {
+      font-size: 18px;
+      margin: 0 0 4px;
+    }
+
+    .local-card-name-en {
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    /* カード下の説明部分 */
+    .local-card-body {
+      padding: 14px 18px 18px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .local-card-place {
+      margin: 0;
+    }
+
+    /* スマホ対応：縦並びに */
+    @media (max-width: 768px) {
+      .local-ingredients {
+        padding: 24px 16px 32px;
+        border-radius: 16px;
+      }
+
+      .local-card-list {
+        flex-direction: column;
+      }
+
+      .local-card {
+        max-width: 100%;
+      }
+    }
+
+    /* ===== 画面いっぱいトランジション ===== */
+    .transition-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+
+    .transition-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .transition-logo {
+      font-size: 42px;
+      letter-spacing: 0.35em;
+      text-align: center;
+      animation: pop 0.8s ease-out forwards;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+/* ===== 3学部情報セクション ===== */
+.faculty-section {
+  background: #fff;
+  padding: 40px 20px 80px;
+  color: #222;
+}
+
+.faculty-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+/* 見出し */
+.faculty-tag {
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0 0 8px;
+}
+
+.faculty-title {
+  font-size: 22px;
+  margin: 0 0 10px;
+}
+
+.faculty-lead {
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0 0 28px;
+}
+
+/* カード並び */
+.faculty-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* カード本体 */
+.faculty-card {
+  flex: 1 1 280px;
+  background: #f7f7f7;
+  border-radius: 18px;
+  padding: 20px 20px 22px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.04);
+  box-sizing: border-box;
+  color: #222;
+
+}
+
+/* カード内テキスト */
+.faculty-label-en {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin: 0 0 4px;
+  color: #999;
+}
+
+.faculty-name-ja {
+  font-size: 17px;
+  margin: 0 0 8px;
+}
+
+.faculty-role {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+.faculty-desc {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0 0 10px;
+}
+
+.faculty-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.faculty-points li::before {
+  content: "・";
+}
+
+/* スマホ対応 */
+@media (max-width: 768px) {
+  .faculty-section {
+    padding: 40px 16px 60px;
+  }
+
+  .faculty-title {
+    font-size: 20px;
+  }
+
+  .faculty-grid {
+    flex-direction: column;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- 上部：左右2分割 -->
+  <section class="split-hero">
+    <!-- 左：コスメ商品（PRODUCTS） -->
+    <div class="split-panel left" data-target="products.html">
+      <div class="panel-content">
+        <div class="panel-label">PRODUCTS</div>
+        <div class="panel-title">コスメラインナップ</div>
+        <a href="#" class="panel-button" data-target="products.html">商品を見る</a>
+      </div>
+    </div>
+
+    <!-- 右：製作工程（MAKING / STORY） -->
+    <div class="split-panel right" data-target="process.html">
+      <div class="panel-content">
+        <div class="panel-label">MAKING STORY</div>
+        <div class="panel-title">制作工程と3学部の役割</div>
+        <a href="#" class="panel-button" data-target="process.html">詳しく見る</a>
+      </div>
+    </div>
+
+    <div class="hero-logo">CONNECT<br>J</div>
+  </section>
+
+  <!-- メニュー＋特産品カード -->
+  <section class="menu-list">
+    <div class="menu-list-inner">
+      <!-- 左側：説明コピー -->
+      <div class="menu-copy">
+        <p class="menu-tag">SITE MENU</p>
+        <h3 class="menu-title">Connect J をもっと知る</h3>
+        <p class="menu-desc">
+          3学部が連携したプロジェクトから生まれる新しい価値。
+          Connect J の世界観と、その背景にあるストーリーをご紹介します。
+        </p>
+      </div>
+
+      <!-- 右側：ボタン型メニュー -->
+      <div class="menu-links">
+        <ul>
+          <li>
+            <a href="shouhin.html" class="menu-pill">
+              <span>CONNECT J</span>
+              ページタイトル
+            </a>
+          </li>
+          <!-- ここに増やしていけるよ
+          <li>
+            <a href="greenjone.html" class="menu-pill">
+              <span>SKIN CARE</span>
+              Green J one
+            </a>
+          </li>
+          <li>
+            <a href="jealou2.html" class="menu-pill">
+              <span>BODY CARE</span>
+              Jealou2
+            </a>
+          </li>
+          -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- 埼玉の特産品カード -->
+    <div class="local-ingredients">
+      <div class="local-ingredients-head">
+        <p class="local-ingredients-tag">SAITAMA LOCAL INGREDIENTS</p>
+        <h3 class="local-ingredients-title">埼玉の恵みから生まれたコスメ</h3>
+      </div>
+
+      <div class="local-card-list">
+        <!-- 狭山茶カード -->
+        <div class="local-card">
+          <div class="local-card-image" style="background-image: url('sayamacha.jpg');">
+            <div class="local-card-overlay">
+              <p class="local-card-name-ja">狭山茶</p>
+              <p class="local-card-name-en">SAYAMA TEA</p>
+            </div>
+          </div>
+          <div class="local-card-body">
+            <p class="local-card-place">
+              保湿・ハリケア ／ 埼玉県狭山市・入間市周辺
+            </p>
+          </div>
+        </div>
+        <!-- 桂木ゆずカード -->
+        <div class="local-card">
+          <div class="local-card-image" style="background-image: url('桂木ゆず.jpg');">
+            <div class="local-card-overlay">
+              <p class="local-card-name-ja">桂木ゆず</p>
+              <p class="local-card-name-en">KATSURAGI YUZU</p>
+            </div>
+          </div>
+          <div class="local-card-body">
+            <p class="local-card-place">
+              整肌・香りのアクセント ／ 埼玉県毛呂山町・桂木地区
+            </p>
+          </div>
+        </div>
+
+        <!-- COMING SOON カード -->
+        <div class="local-card">
+          <div class="local-card-image" style="
+            background-image: linear-gradient(135deg,#d7d7d7,#f2f2f2);
+          ">
+            <div class="local-card-overlay">
+              <p class="local-card-name-ja">COMING SOON</p>
+              <p class="local-card-name-en">NEXT INGREDIENT</p>
+            </div>
+          </div>
+          <div class="local-card-body">
+            <p class="local-card-place">
+              新しい埼玉の素材を準備中です。<br>
+              次のコスメラインへの展開をお楽しみに。
+            </p>
+          </div>
+        </div>
+</section>
+
+<!-- 3学部情報セクション -->
+<section class="faculty-section">
+  <div class="faculty-inner">
+    <p class="faculty-tag">3 FACULTIES</p>
+    <h3 class="faculty-title">三学部の連携で生まれるコスメ</h3>
+    <p class="faculty-lead">
+      経営学部・現代政策学部・薬学部がそれぞれの専門性を持ち寄り、
+      企画から処方設計、地域とのつながりづくりまで一貫して取り組んでいます。
+    </p>
+
+    <div class="faculty-grid">
+      <!-- 経営学部カード -->
+      <div class="faculty-card">
+        <p class="faculty-label-en">FACULTY OF BUSINESS</p>
+        <h4 class="faculty-name-ja">経営学部</h4>
+        <p class="faculty-role">マーケティング・ブランド設計</p>
+        <p class="faculty-desc">
+          ターゲット設定やコンセプトづくり、価格・販売戦略など、
+          コスメとして「選ばれるため」の仕組みをデザインします。
+        </p>
+        <ul class="faculty-points">
+          <li>市場調査・ペルソナ設計</li>
+          <li>ブランドコンセプト・ネーミング</li>
+          <li>販路・プロモーション戦略</li>
+        </ul>
+      </div>
+
+      <!-- 現代政策学部カード -->
+      <div class="faculty-card">
+        <p class="faculty-label-en">FACULTY OF MODERN POLICY</p>
+        <h4 class="faculty-name-ja">現代政策学部</h4>
+        <p class="faculty-role">地域資源・ストーリー設計</p>
+        <p class="faculty-desc">
+          埼玉の特産品や地域の声をリサーチし、コスメを通じて
+          どのように地域の魅力を伝えるかを考えます。
+        </p>
+        <ul class="faculty-points">
+          <li>地域資源（狭山茶・桂木ゆず等）の調査</li>
+          <li>ストーリー・政策的な視点の整理</li>
+          <li>地域との連携企画の立案</li>
+        </ul>
+      </div>
+
+      <!-- 薬学部カード -->
+      <div class="faculty-card">
+        <p class="faculty-label-en">FACULTY OF PHARMACY</p>
+        <h4 class="faculty-name-ja">薬学部</h4>
+        <p class="faculty-role">処方設計・安全性評価</p>
+        <p class="faculty-desc">
+          肌へのやさしさや使い心地を大切にしながら、
+          成分の組み合わせや濃度バランスを検討し、処方を組み立てます。
+        </p>
+        <ul class="faculty-points">
+          <li>有効成分・保湿成分の選定</li>
+          <li>処方試作・テクスチャー調整</li>
+          <li>安全性・安定性の確認</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+        
+  </section>
+
+  <!-- 画面いっぱいの CONNECT J オーバーレイ -->
+  <div class="transition-overlay">
+    <div class="transition-logo">CONNECT&nbsp;J</div>
+  </div>
+
+  <script>
+    // クリックでトランジション→ページ遷移
+    function startTransition(url) {
+      const overlay = document.querySelector('.transition-overlay');
+      overlay.classList.add('active');
+
+      setTimeout(function() {
+        window.location.href = url;
+      }, 1000);  // 1秒後に遷移
+    }
+
+    // data-target を持つ要素にイベントを付ける
+    document.querySelectorAll('[data-target]').forEach(function(el) {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('data-target');
+        if (url) {
+          startTransition(url);
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
